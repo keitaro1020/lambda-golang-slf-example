@@ -1,0 +1,1 @@
+# lambda-golang-slf-example
