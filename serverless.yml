@@ -1,0 +1,57 @@
+service: lambda-golang-slf-example
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: go1.x
+  region: ap-northeast-1
+  stage: ${opt:stage, self:custom.defaultStage}
+  profile: ${self:custom.profiles.${self:provider.stage}}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "arn:aws:s3:::${self:custom.otherfile.environment.${self:provider.stage}.BucketName}/*"
+custom:
+  defaultStage: dev
+  profiles:
+    dev: ${self:custom.otherfile.environment.${self:provider.stage}.Profile}
+    prd: ${self:custom.otherfile.environment.${self:provider.stage}.Profile}
+  otherfile:
+    environment:
+      dev: ${file(./conf/dev/env.yml)}
+      prd: ${file(./conf/prd/env.yml)}
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  ping:
+    name: ping
+    handler: bin/ping
+    events:
+      - http:
+          path: ping
+          method: get
+  sqsWorker:
+    name: sqsWorker
+    handler: bin/sqs_worker
+    timeout: 30
+    reservedConcurrency: 1
+    events:
+      - sqs:
+          arn: arn:aws:sqs:ap-northeast-1:${self:custom.otherfile.environment.${self:provider.stage}.ID}:slf-queue
+          batchSize: 1
+    environment:
+      BucketName: ${self:custom.otherfile.environment.${self:provider.stage}.BucketName}
+
+resources:
+  Resources:
+    MyQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "slf-queue"
