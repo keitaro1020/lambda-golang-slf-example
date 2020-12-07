@@ -55,3 +55,8 @@ resources:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: "slf-queue"
+    Bucket:
+      Type: "AWS::S3::Bucket"
+      Properties:
+        BucketName: ${self:custom.otherfile.environment.${self:provider.stage}.BucketName}
+

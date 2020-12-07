@@ -39,7 +39,7 @@ func (app *app) SQSWorker(ctx context.Context, message string) error {
 		}
 
 		file := bytes.NewBuffer(data)
-		if err := app.repos.S3Client.Upload(ctx, os.Getenv("BucketName"), fmt.Sprintf("%v.txt", cat.ID), file); err != nil {
+		if err := app.repos.S3Client.Upload(ctx, os.Getenv("BucketName"), fmt.Sprintf("%v/%v.txt", message, cat.ID), file); err != nil {
 			return err
 		}
 		log.Printf("cat[%v] = %v", i, cat)
