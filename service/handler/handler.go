@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/keitaro1020/lambda-golang-slf-example/service/application"
 
@@ -13,6 +14,7 @@ import (
 type Handler interface {
 	Ping(ctx context.Context) (Response, error)
 	SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error
+	S3Worker(ctx context.Context, s3Event events.S3Event) error
 }
 
 func NewHandler(app application.App) Handler {
@@ -59,6 +61,17 @@ func (h *handler) SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error
 	for i := range sqsEvent.Records {
 		if err := h.app.SQSWorker(ctx, sqsEvent.Records[i].Body); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+func (h *handler) S3Worker(ctx context.Context, s3Event events.S3Event) error {
+	fmt.Printf("%+v", s3Event)
+	for i := range s3Event.Records {
+		s3 := s3Event.Records[i].S3
+		if err := h.app.S3Worker(ctx, s3.Bucket.Name, s3.Object.Key); err != nil {
+			return nil
 		}
 	}
 	return nil

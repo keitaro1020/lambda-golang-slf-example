@@ -1,0 +1,9 @@
+{
+  "name": "lambda-golang-slf-example",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}

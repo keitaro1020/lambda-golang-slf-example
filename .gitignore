@@ -22,4 +22,6 @@ vendor
 
 # config
 conf/dev/env.yml
+conf/dev/.secret.yml
 conf/prd/env.yml
+conf/prd/.secret.yml

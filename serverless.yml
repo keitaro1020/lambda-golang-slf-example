@@ -1,6 +1,9 @@
-service: lambda-golang-slf-example
+service: shishido-test
 
 frameworkVersion: '2'
+
+plugins:
+  - serverless-pseudo-parameters
 
 provider:
   name: aws
@@ -12,7 +15,18 @@ provider:
     - Effect: Allow
       Action:
         - s3:*
-      Resource: "arn:aws:s3:::${self:custom.otherfile.environment.${self:provider.stage}.BucketName}/*"
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterfaces
+        - ec2:DeleteNetworkInterface
+        - ec2:DetachNetworkInterface
+        - secretsmanager:GetSecretValue
+        - rds-data:*
+      Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-bucket/*"
+#  enviroment:
+#    DB_USER: "${self:custom.secret.USER_NAME}"
+#    DB_PASS: "${self:custom.secret.PASSWORD}"
+#    DB_ENDPOINT: "${self:custom.secret.DB_ENDPOINT}"
+#    DB_NAME: "${self:custom.secret.DB_NAME}"
 custom:
   defaultStage: dev
   profiles:
@@ -22,6 +36,7 @@ custom:
     environment:
       dev: ${file(./conf/dev/env.yml)}
       prd: ${file(./conf/prd/env.yml)}
+  secret: ${file(./conf/${self:provider.stage}/.secret.yml)}
 
 package:
   exclude:
@@ -33,6 +48,12 @@ functions:
   ping:
     name: ping
     handler: bin/ping
+    vpc:
+      securityGroupIds:
+        - !Ref LambdaSecurityGroup
+      subnetIds:
+        - !Ref SubnetPrivateA
+        - !Ref SubnetPrivateC
     events:
       - http:
           path: ping
@@ -42,21 +63,334 @@ functions:
     handler: bin/sqs_worker
     timeout: 30
     reservedConcurrency: 1
+    vpc:
+      securityGroupIds:
+        - !Ref LambdaSecurityGroup
+      subnetIds:
+        - !Ref SubnetPrivateA
+        - !Ref SubnetPrivateC
     events:
       - sqs:
-          arn: arn:aws:sqs:ap-northeast-1:${self:custom.otherfile.environment.${self:provider.stage}.ID}:slf-queue
+          arn: "arn:aws:sqs:ap-northeast-1:#{AWS::AccountId}:${self:service}-${self:provider.stage}-queue"
           batchSize: 1
     environment:
-      BucketName: ${self:custom.otherfile.environment.${self:provider.stage}.BucketName}
+      BucketName: ${self:service}-${self:provider.stage}-bucket
+  s3Worker:
+    name: s3Worker
+    handler: bin/s3_worker
+    timeout: 30
+    reservedConcurrency: 1
+    vpc:
+      securityGroupIds:
+        - !Ref LambdaSecurityGroup
+      subnetIds:
+        - !Ref SubnetPrivateA
+        - !Ref SubnetPrivateC
+    events:
+      - s3:
+          bucket: ${self:service}-${self:provider.stage}-bucket
+          event: s3:ObjectCreated:*
+          existing: true
 
 resources:
   Resources:
-    MyQueue:
-      Type: "AWS::SQS::Queue"
+    Queue:
+      Type: AWS::SQS::Queue
       Properties:
-        QueueName: "slf-queue"
-    Bucket:
-      Type: "AWS::S3::Bucket"
-      Properties:
-        BucketName: ${self:custom.otherfile.environment.${self:provider.stage}.BucketName}
+        QueueName: ${self:service}-${self:provider.stage}-queue
 
+    ## VPC Resources
+    VPC:
+      Type: AWS::EC2::VPC
+      DeletionPolicy: Delete
+      Properties:
+        CidrBlock: 10.44.0.0/16
+        Tags:
+          - Key: Name
+            Value: ${self:service}-${self:provider.stage}-vpc
+    InternetGateway:
+      Type: AWS::EC2::InternetGateway
+      Properties:
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-internet-gateway"
+    VPCGatewayAttachment:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId: !Ref VPC
+        InternetGatewayId: !Ref InternetGateway
+
+    SubnetPublic:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: 10.44.0.0/24
+        AvailabilityZone: ap-northeast-1a
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-subnet-public"
+    SubnetPrivateA:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: 10.44.10.0/24
+        AvailabilityZone: ap-northeast-1a
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-subnet-private-a"
+    SubnetPrivateC:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: 10.44.11.0/24
+        AvailabilityZone: ap-northeast-1c
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-subnet-private-c"
+
+    RouteTablePublic:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref VPC
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-route-table-public"
+    RouteTablePrivateA:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref VPC
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-route-table-private-a"
+    RouteTablePrivateC:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref VPC
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-route-table-private-b"
+
+    SubnetRouteTableAssociationPublic:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref SubnetPublic
+        RouteTableId: !Ref RouteTablePublic
+    SubnetRouteTableAssociationPrivateA:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref SubnetPrivateA
+        RouteTableId: !Ref RouteTablePrivateA
+    SubnetRouteTableAssociationPrivateC:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref SubnetPrivateC
+        RouteTableId: !Ref RouteTablePrivateC
+
+    EIP:
+      Type: AWS::EC2::EIP
+      Properties:
+        Domain: vpc
+    NatGateway:
+      Type: AWS::EC2::NatGateway
+      Properties:
+        AllocationId: !GetAtt 'EIP.AllocationId'
+        SubnetId: !Ref SubnetPublic
+    BastionEIP:
+      Type: AWS::EC2::EIP
+      Properties:
+        InstanceId:
+          Ref: BastionInstance
+        Domain:
+          Ref: VPC
+
+    InternetRoutePrivateA:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId: !Ref RouteTablePrivateA
+        DestinationCidrBlock: '0.0.0.0/0'
+        NatGatewayId: !Ref NatGateway
+    InternetRoutePrivateC:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId: !Ref RouteTablePrivateC
+        DestinationCidrBlock: '0.0.0.0/0'
+        NatGatewayId: !Ref NatGateway
+    InternetRoutePublic:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId: !Ref RouteTablePublic
+        DestinationCidrBlock: '0.0.0.0/0'
+        GatewayId: !Ref InternetGateway
+
+    LambdaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Lambda Functions
+        VpcId: !Ref VPC
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-lambda-security"
+    LambdaSecurityGroupIngress:
+      Type: AWS::EC2::SecurityGroupIngress
+      Properties:
+        GroupId: !Ref LambdaSecurityGroup
+        IpProtocol: -1
+        SourceSecurityGroupId: !Ref LambdaSecurityGroup
+    RDSSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for RDS
+        VpcId: !Ref VPC
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 3306
+            ToPort: 3306
+            CidrIp: 10.44.10.0/24
+          - IpProtocol: tcp
+            FromPort: 3306
+            ToPort: 3306
+            CidrIp: 10.44.11.0/24
+          - IpProtocol: tcp
+            FromPort: 3306
+            ToPort: 3306
+            SourceSecurityGroupId: !Ref BastionSecurityGroup
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-rds-security"
+      DependsOn: VPC
+    BastionSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Bastion Instance
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 22
+            ToPort: 22
+            CidrIp: 0.0.0.0/0
+        VpcId: !Ref VPC
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-bastion-security"
+
+    ## RDS Resources
+    DBSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: "database subnet group"
+        DBSubnetGroupName: "${self:service}-${self:provider.stage}-db-subnet-group"
+        SubnetIds:
+          - !Ref SubnetPrivateA
+          - !Ref SubnetPrivateC
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-db-subnet"
+    DBInstance:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBInstanceIdentifier: "${self:service}-${self:provider.stage}-db-instance"
+        DBSubnetGroupName: !Ref DBSubnetGroup
+        Engine: mysql
+        EngineVersion: "5.7.31"
+        DBInstanceClass: db.t2.micro
+        StorageType: gp2
+        AllocatedStorage: 20
+        DBName: "lambda_database"
+        MasterUsername: ${self:custom.secret.USER_NAME}
+        MasterUserPassword: ${self:custom.secret.PASSWORD}
+        VPCSecurityGroups:
+          - !Ref RDSSecurityGroup
+        DeletionProtection: false
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-db-instance"
+      DeletionPolicy: "Delete"
+
+    ## RDS Proxy
+    SecretRDSProxy:
+      Type: AWS::SecretsManager::Secret
+      Properties:
+        Name: "${self:service}-${self:provider.stage}-secret-rds-proxy"
+        SecretString: '{"username":"${self:custom.secret.USER_NAME}", "password":"${self:custom.secret.PASSWORD}"}'
+    RoleRDSProxy:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: "${self:service}-${self:provider.stage}-role-rds-proxy"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - "rds.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        Path: /
+        Policies:
+          - PolicyName: "${self:service}-${self:provider.stage}-role-rds-proxy-policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "secretsmanager:GetResourcePolicy"
+                    - "secretsmanager:GetSecretValue"
+                    - "secretsmanager:DescribeSecret"
+                    - "secretsmanager:ListSecretVersionIds"
+                  Resource:
+                    - !Ref SecretRDSProxy
+                - Effect: Allow
+                  Action:
+                    - "kms:Decrypt"
+                  Resource: "arn:aws:kms:${self:provider.region}:#{AWS::AccountId}:key/*"
+                  Condition:
+                    StringEquals:
+                      kms:ViaService: "secretsmanager.${self:provider.region}.amazonaws.com"
+      DependsOn: SecretRDSProxy
+    RDSProxy:
+      Type: AWS::RDS::DBProxy
+      Properties:
+        DBProxyName: "${self:service}-${self:provider.stage}-rds-proxy"
+        Auth:
+          - SecretArn: !Ref SecretRDSProxy
+        VpcSecurityGroupIds:
+          - !Ref RDSSecurityGroup
+        VpcSubnetIds:
+          - !Ref SubnetPrivateA
+          - !Ref SubnetPrivateC
+        EngineFamily: MYSQL
+        RoleArn: !GetAtt RoleRDSProxy.Arn
+      DependsOn: SecretRDSProxy
+    RDSProxyTargetGroup:
+      Type: AWS::RDS::DBProxyTargetGroup
+      Properties:
+        TargetGroupName: default
+        DBProxyName: !Ref RDSProxy
+        DBInstanceIdentifiers:
+          - !Ref DBInstance
+      DependsOn:
+        - DBInstance
+
+    ## Bastion
+    BastionInstance:
+      Type: AWS::EC2::Instance
+      Properties:
+        SecurityGroupIds:
+          - Ref: BastionSecurityGroup
+        InstanceInitiatedShutdownBehavior: stop
+        KeyName: ${self:custom.secret.KEYPAIR}
+        ImageId: ami-00f045aed21a55240
+        Monitoring: false
+        CreditSpecification:
+          CPUCredits: standard
+        InstanceType: t2.micro
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: 8
+              VolumeType: gp2
+              DeleteOnTermination: true
+        SubnetId:
+          Ref: SubnetPublic
+        Tags:
+          - Key: Name
+            Value: "${self:service}-${self:provider.stage}-bastian"

@@ -21,7 +21,19 @@
   <component name="ChangeListManager">
     <list default="true" id="91174372-ac70-46cc-af5a-2041319b4d33" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/sample/env.yml" beforeDir="false" afterPath="$PROJECT_DIR$/conf/sample/env.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverless.yml" beforeDir="false" afterPath="$PROJECT_DIR$/serverless.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/application/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/application/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/domain/cat.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/domain/cat.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/domain/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/domain/repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/domain/s3.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/domain/s3.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/handler/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/infra/httpcli/s3.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/infra/httpcli/s3.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/infra/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/infra/repository.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,14 +77,16 @@
     <property name="settings.editor.selected.configurable" value="watcher.settings" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sql/initdb.d" />
+      <recent name="$PROJECT_DIR$/sql" />
+      <recent name="$PROJECT_DIR$/sql/docker/db/sql" />
+      <recent name="$PROJECT_DIR$/service/entrypoint/functions" />
+      <recent name="$PROJECT_DIR$/service/entrypoint" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/conf/sample" />
       <recent name="$PROJECT_DIR$/conf/prd" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/service/entrypoint/functions" />
-      <recent name="$PROJECT_DIR$/service/entrypoint" />
-      <recent name="$PROJECT_DIR$/cmd" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -105,6 +119,10 @@
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="WindowStateProjectService">
+    <state x="2215" y="334" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1607679756008">
+      <screen x="1680" y="23" width="1920" height="1057" />
+    </state>
+    <state x="2215" y="334" key="#com.intellij.fileTypes.FileTypeChooser/0.23.1680.949/1680.23.1920.1057@1680.23.1920.1057" timestamp="1607679756008" />
     <state x="2099" y="355" key="EditFileWatcherDialog" timestamp="1607307616460">
       <screen x="1680" y="23" width="1920" height="1057" />
     </state>

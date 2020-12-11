@@ -13,6 +13,7 @@ import (
 
 type App interface {
 	SQSWorker(ctx context.Context, message string) error
+	S3Worker(ctx context.Context, bucket, filename string) error
 }
 
 func NewApp(repos *domain.AllRepository) App {
@@ -44,5 +45,15 @@ func (app *app) SQSWorker(ctx context.Context, message string) error {
 		}
 		log.Printf("cat[%v] = %v", i, cat)
 	}
+	return nil
+}
+
+func (app *app) S3Worker(ctx context.Context, bucket, filename string) error {
+	file, err := app.repos.S3Client.Download(ctx, bucket, filename)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("%v", string(file))
 	return nil
 }
