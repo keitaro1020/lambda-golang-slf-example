@@ -22,11 +22,11 @@ provider:
         - secretsmanager:GetSecretValue
         - rds-data:*
       Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-bucket/*"
-#  enviroment:
-#    DB_USER: "${self:custom.secret.USER_NAME}"
-#    DB_PASS: "${self:custom.secret.PASSWORD}"
-#    DB_ENDPOINT: "${self:custom.secret.DB_ENDPOINT}"
-#    DB_NAME: "${self:custom.secret.DB_NAME}"
+  environment:
+    DB_USER: "${self:custom.secret.USER_NAME}"
+    DB_PASS: "${self:custom.secret.PASSWORD}"
+    DB_ENDPOINT: "${self:custom.secret.DB_ENDPOINT}"
+    DB_NAME: "${self:custom.secret.DB_NAME}"
 custom:
   defaultStage: dev
   profiles:
