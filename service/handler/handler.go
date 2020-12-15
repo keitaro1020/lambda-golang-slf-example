@@ -58,6 +58,7 @@ func (h *handler) Ping(ctx context.Context) (Response, error) {
 }
 
 func (h *handler) SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error {
+	// todo 入力パラメータのチェック
 	for i := range sqsEvent.Records {
 		if err := h.app.SQSWorker(ctx, sqsEvent.Records[i].Body); err != nil {
 			log.Errorf("SQSWorker error = %v", err)
@@ -68,6 +69,7 @@ func (h *handler) SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error
 }
 
 func (h *handler) S3Worker(ctx context.Context, s3Event events.S3Event) error {
+	// todo 入力パラメータのチェック
 	log.Debugf("%+v", s3Event)
 	for i := range s3Event.Records {
 		s3 := s3Event.Records[i].S3
