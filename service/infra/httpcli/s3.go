@@ -41,7 +41,7 @@ func (cli *s3Client) Download(ctx context.Context, bucketName, key string) ([]by
 	}); err != nil {
 		return nil, err
 	}
-	return buf, nil
+	return file.Bytes(), nil
 }
 
 func (cli *s3Client) newSession() *session.Session {

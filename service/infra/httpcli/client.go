@@ -6,11 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	neturl "net/url"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // HTTPClient is a HTTP client interface

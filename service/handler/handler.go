@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/keitaro1020/lambda-golang-slf-example/service/application"
-
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/keitaro1020/lambda-golang-slf-example/service/application"
+	log "github.com/sirupsen/logrus"
 )
 
 type Handler interface {
@@ -53,6 +53,7 @@ func (h *handler) Ping(ctx context.Context) (Response, error) {
 			"X-MyCompany-Func-Reply": "ping-cmd",
 		},
 	}
+	log.Infof("Ping Response: %v", &resp)
 
 	return resp, nil
 }
