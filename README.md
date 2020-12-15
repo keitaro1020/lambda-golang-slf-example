@@ -11,8 +11,8 @@
 - S3のファイル作成イベントを受け取り、ファイルを取得し、JSONをRDSに保存するLambda関数
     - [x] S3ファイル作成イベントを受け取る
     - [x] ファイルを取得
-    - [ ] JSONをパースしてRDSに保存
-        - [ ] RDS PROXY経由で接続
+    - [x] JSONをパースしてRDSに保存
+        - [x] RDS PROXY経由で接続
     - serverless.yml (CloudFormation)の設定
         - [x] Lambda関数設定
         - [x] VPC,Subnet設定
