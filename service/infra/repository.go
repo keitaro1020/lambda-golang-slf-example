@@ -18,7 +18,8 @@ func NewAllRepository() *domain.AllRepository {
 	}
 	return &domain.AllRepository{
 		CatClient:     httpcli.NewCatClient(httpCli),
-		CatRepository: db.NewCatRepository(dbConfig),
 		S3Client:      httpcli.NewS3Client(),
+		Transaction:   db.NewTransaction(dbConfig),
+		CatRepository: db.NewCatRepository(dbConfig),
 	}
 }

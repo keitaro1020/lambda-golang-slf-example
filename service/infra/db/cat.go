@@ -50,8 +50,8 @@ func (re *catRepository) GetAll(ctx context.Context) (domain.Cats, error) {
 	return dcats, nil
 }
 
-func (re *catRepository) Create(ctx context.Context, cat *domain.Cat) (*domain.Cat, error) {
-	db, err := connectDB(re.config)
+func (re *catRepository) CreateInTx(ctx context.Context, tx domain.Tx, cat *domain.Cat) (*domain.Cat, error) {
+	sqlTx, err := sqlTx(tx)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (re *catRepository) Create(ctx context.Context, cat *domain.Cat) (*domain.C
 		Width:  int(cat.Width),
 		Height: int(cat.Height),
 	}
-	if err := mcat.Upsert(ctx, db, boil.Infer(), boil.Infer()); err != nil {
+	if err := mcat.Upsert(ctx, sqlTx, boil.Infer(), boil.Infer()); err != nil {
 		return nil, err
 	}
 

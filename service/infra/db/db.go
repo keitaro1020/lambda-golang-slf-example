@@ -1,10 +1,13 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
 )
 
 type Config struct {
@@ -12,6 +15,10 @@ type Config struct {
 	Pass     string
 	Endpoint string
 	Name     string
+}
+
+type txConn struct {
+	*sql.Tx
 }
 
 func connectDB(config *Config) (*sql.DB, error) {
@@ -29,4 +36,51 @@ func connectDB(config *Config) (*sql.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func NewTransaction(config *Config) func(ctx context.Context, txFunc func(ctx context.Context, tx domain.Tx) error) (err error) {
+	return func(ctx context.Context, txFunc func(ctx context.Context, tx domain.Tx) error) (err error) {
+		db, err := connectDB(config)
+		if err != nil {
+			return err
+		}
+
+		tx, err := db.BeginTx(ctx, nil)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			if p := recover(); p != nil {
+				switch p := p.(type) {
+				case error:
+					err = p
+				default:
+					err = fmt.Errorf("%s", p)
+				}
+			}
+			if err != nil {
+				tx.Rollback()
+				return
+			}
+			tx.Commit()
+		}()
+
+		err = txFunc(ctx, &txConn{tx})
+		return err
+	}
+}
+
+func (tx *txConn) Executor() interface{} {
+	return tx.Tx
+}
+
+func sqlTx(tx domain.Tx) (*sql.Tx, error) {
+	txi := tx.Executor()
+
+	sqlTx, ok := txi.(*sql.Tx)
+	if !ok {
+		return nil, errors.New("invalid connection")
+	}
+	return sqlTx, nil
 }

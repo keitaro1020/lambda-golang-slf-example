@@ -28,7 +28,7 @@ type app struct {
 }
 
 func (app *app) SQSWorker(ctx context.Context, message string) error {
-	log.Debug("log message %v", message)
+	log.Debugf("log message %v", message)
 	cats, err := app.repos.CatClient.Search(ctx)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (app *app) SQSWorker(ctx context.Context, message string) error {
 		if err := app.repos.S3Client.Upload(ctx, os.Getenv("BucketName"), fmt.Sprintf("%v/%v.txt", message, cat.ID), file); err != nil {
 			return err
 		}
-		log.Debug("cat[%v] = %v", i, cat)
+		log.Debugf("cat[%v] = %v", i, cat)
 	}
 	return nil
 }
@@ -55,6 +55,19 @@ func (app *app) S3Worker(ctx context.Context, bucket, filename string) error {
 		return nil
 	}
 
-	log.Debug("%v", string(file))
+	cat := &domain.Cat{}
+	if err := json.Unmarshal(file, cat); err != nil {
+		return err
+	}
+
+	if err := app.repos.Transaction(ctx, func(ctx context.Context, tx domain.Tx) error {
+		if _, err := app.repos.CatRepository.CreateInTx(ctx, tx, cat); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
 	return nil
 }

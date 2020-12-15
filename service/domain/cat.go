@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 // Cat is domain object
 type Cat struct {
@@ -25,5 +27,5 @@ type CatClient interface {
 type CatRepository interface {
 	Get(ctx context.Context, id CatID) (*Cat, error)
 	GetAll(ctx context.Context) (Cats, error)
-	Create(ctx context.Context, cat *Cat) (*Cat, error)
+	CreateInTx(ctx context.Context, tx Tx, cat *Cat) (*Cat, error)
 }
