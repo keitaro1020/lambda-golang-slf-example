@@ -15,3 +15,7 @@ deploy: clean build
 gomodgen:
 	chmod u+x gomod.sh
 	./gomod.sh
+
+mockgen:
+	chmod u+x mockgen.sh
+	./mockgen.sh
