@@ -6,12 +6,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/keitaro1020/lambda-golang-slf-example/service/infra/db/models"
+	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
 
-	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-example/service/infra/db/models"
 )
 
 type Config struct {
