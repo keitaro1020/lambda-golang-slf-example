@@ -6,7 +6,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/keitaro1020/lambda-golang-slf-example/service/infra/db/models"
+	log "github.com/sirupsen/logrus"
+
 	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
 )
 
@@ -35,6 +39,10 @@ func connectDB(config *Config) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// set debug
+	models.SetDebug(log.StandardLogger().Out)
+
 	return db, nil
 }
 
