@@ -91,6 +91,22 @@ functions:
           bucket: ${self:service}-${self:provider.stage}-bucket
           event: s3:ObjectCreated:*
           existing: true
+  getCat:
+    name: getCat
+    handler: bin/get_cat
+    vpc:
+      securityGroupIds:
+        - !Ref LambdaSecurityGroup
+      subnetIds:
+        - !Ref SubnetPrivateA
+        - !Ref SubnetPrivateC
+    events:
+      - http:
+          path: cats
+          method: get
+      - http:
+          path: cats/{id}
+          method: get
 
 resources:
   Resources:

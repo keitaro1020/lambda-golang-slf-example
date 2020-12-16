@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"net/http"
+
+	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/keitaro1020/lambda-golang-slf-example/service/application"
@@ -14,6 +17,7 @@ type Handler interface {
 	Ping(ctx context.Context) (Response, error)
 	SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error
 	S3Worker(ctx context.Context, s3Event events.S3Event) error
+	GetCat(ctx context.Context, req Request) (Response, error)
 }
 
 func NewHandler(app application.App) Handler {
@@ -27,6 +31,8 @@ func NewHandler(app application.App) Handler {
 //
 // https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
 type Response events.APIGatewayProxyResponse
+
+type Request events.APIGatewayProxyRequest
 
 type handler struct {
 	app application.App
@@ -79,4 +85,58 @@ func (h *handler) S3Worker(ctx context.Context, s3Event events.S3Event) error {
 		}
 	}
 	return nil
+}
+
+func (h *handler) GetCat(ctx context.Context, req Request) (Response, error) {
+	var resValue interface{}
+	res := Response{StatusCode: http.StatusOK}
+	id, ok := req.PathParameters["id"]
+	if ok {
+		cat, err := h.app.GetCat(ctx, domain.CatID(id))
+		if err != nil {
+			return h.errorResponse(http.StatusInternalServerError, err), nil
+		}
+		resValue = cat
+	} else {
+		cats, err := h.app.GetCats(ctx)
+		if err != nil {
+			return h.errorResponse(http.StatusInternalServerError, err), nil
+		}
+		resValue = cats
+	}
+
+	resBody, err := h.jsonString(resValue)
+	if err != nil {
+		return h.errorResponse(http.StatusInternalServerError, err), nil
+	}
+	res.Body = resBody
+
+	return res, nil
+}
+
+func (h *handler) errorResponse(status int, err error) Response {
+	body, err := h.jsonString(map[string]interface{}{
+		"message": "Okay so your other function also executed successfully!",
+	})
+	if err != nil {
+		return Response{StatusCode: http.StatusInternalServerError, Body: err.Error()}
+	}
+	return Response{
+		StatusCode:      status,
+		IsBase64Encoded: false,
+		Body:            body,
+		Headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}
+}
+
+func (h *handler) jsonString(v interface{}) (string, error) {
+	body, err := json.Marshal(v)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	json.HTMLEscape(&buf, body)
+	return buf.String(), nil
 }
