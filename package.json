@@ -2,7 +2,9 @@
   "name": "lambda-golang-slf-example",
   "description": "",
   "version": "0.1.0",
-  "dependencies": {},
+  "dependencies": {
+    "serverless-appsync-plugin": "^1.4.0"
+  },
   "devDependencies": {
     "serverless-pseudo-parameters": "^2.5.0"
   }

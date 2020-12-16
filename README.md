@@ -21,5 +21,7 @@
         - [x] RDS Proxy設定
         - [x] RDSにアクセスするための踏み台EC2
 - httpのGETリクエストを受け取り、RDSを検索した結果を返すLambda関数
-    - [ ] httpのGETリクエストを受け取る
-    - [ ] RDSを検索した結果を返す
+    - [x] httpのGETリクエストを受け取る
+    - [x] RDSを検索した結果を返す
+- [ ] graphqlで実装された、RDSを検索した結果を返すLambda関数
+    - appSyncを使う

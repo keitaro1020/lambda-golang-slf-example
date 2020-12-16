@@ -4,6 +4,7 @@ frameworkVersion: '2'
 
 plugins:
   - serverless-pseudo-parameters
+  - serverless-appsync-plugin
 
 provider:
   name: aws
@@ -27,6 +28,7 @@ provider:
     DB_PASS: "${self:custom.secret.PASSWORD}"
     DB_ENDPOINT: "${self:custom.secret.DB_ENDPOINT}"
     DB_NAME: "${self:custom.secret.DB_NAME}"
+
 custom:
   defaultStage: dev
   profiles:
