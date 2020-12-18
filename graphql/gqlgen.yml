@@ -1,0 +1,25 @@
+schema:
+  - ./schema.graphqls
+
+exec:
+  filename: ./generated/server_gen.go
+
+model:
+  filename: ../service/domain/models_gen.go
+
+resolver:
+  layout: follow-schema
+  dir: ../service/handler
+
+autobind:
+  - "github.com/keitaro1020/lambda-golang-slf-example/service/domain"
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model: github.com/99designs/gqlgen/graphql.Int64

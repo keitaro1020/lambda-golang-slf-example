@@ -1,0 +1,11 @@
+type Query {
+  cats(first: Int! = 5): [Cat!]!
+  cat(id: ID!): Cat
+}
+
+type Cat {
+  id: ID!
+  url: String!
+  width: Int!
+  height: Int!
+}

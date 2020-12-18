@@ -88,18 +88,18 @@ func (mr *MockCatRepositoryMockRecorder) Get(ctx, id interface{}) *gomock.Call {
 }
 
 // GetAll mocks base method
-func (m *MockCatRepository) GetAll(ctx context.Context) (domain.Cats, error) {
+func (m *MockCatRepository) GetAll(ctx context.Context, first int64) (domain.Cats, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll", ctx)
+	ret := m.ctrl.Call(m, "GetAll", ctx, first)
 	ret0, _ := ret[0].(domain.Cats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAll indicates an expected call of GetAll
-func (mr *MockCatRepositoryMockRecorder) GetAll(ctx interface{}) *gomock.Call {
+func (mr *MockCatRepositoryMockRecorder) GetAll(ctx, first interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockCatRepository)(nil).GetAll), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockCatRepository)(nil).GetAll), ctx, first)
 }
 
 // CreateInTx mocks base method

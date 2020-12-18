@@ -16,7 +16,7 @@ type App interface {
 	SQSWorker(ctx context.Context, message string) error
 	S3Worker(ctx context.Context, bucket, filename string) error
 	GetCat(ctx context.Context, id domain.CatID) (*domain.Cat, error)
-	GetCats(ctx context.Context) (domain.Cats, error)
+	GetCats(ctx context.Context, first int64) (domain.Cats, error)
 }
 
 func NewApp(repos *domain.AllRepository) App {
@@ -82,8 +82,8 @@ func (app *app) GetCat(ctx context.Context, id domain.CatID) (*domain.Cat, error
 	return cat, nil
 }
 
-func (app *app) GetCats(ctx context.Context) (domain.Cats, error) {
-	cats, err := app.repos.CatRepository.GetAll(ctx)
+func (app *app) GetCats(ctx context.Context, first int64) (domain.Cats, error) {
+	cats, err := app.repos.CatRepository.GetAll(ctx, first)
 	if err != nil {
 		return nil, err
 	}

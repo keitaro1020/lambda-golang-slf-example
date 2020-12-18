@@ -23,5 +23,6 @@
 - httpのGETリクエストを受け取り、RDSを検索した結果を返すLambda関数
     - [x] httpのGETリクエストを受け取る
     - [x] RDSを検索した結果を返す
-- [ ] graphqlで実装された、RDSを検索した結果を返すLambda関数
-    - appSyncを使う
+- graphqlで実装された、RDSを検索した結果を返すLambda関数
+    - [x] gqlgenを使う
+    - [ ] appSyncを使う

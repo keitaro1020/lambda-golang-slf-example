@@ -78,16 +78,16 @@ func (mr *MockAppMockRecorder) GetCat(ctx, id interface{}) *gomock.Call {
 }
 
 // GetCats mocks base method
-func (m *MockApp) GetCats(ctx context.Context) (domain.Cats, error) {
+func (m *MockApp) GetCats(ctx context.Context, first int64) (domain.Cats, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCats", ctx)
+	ret := m.ctrl.Call(m, "GetCats", ctx, first)
 	ret0, _ := ret[0].(domain.Cats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCats indicates an expected call of GetCats
-func (mr *MockAppMockRecorder) GetCats(ctx interface{}) *gomock.Call {
+func (mr *MockAppMockRecorder) GetCats(ctx, first interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCats", reflect.TypeOf((*MockApp)(nil).GetCats), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCats", reflect.TypeOf((*MockApp)(nil).GetCats), ctx, first)
 }

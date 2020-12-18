@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+
 	"github.com/volatiletech/sqlboiler/v4/boil"
 
 	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
@@ -32,13 +34,13 @@ func (re *catRepository) Get(ctx context.Context, id domain.CatID) (*domain.Cat,
 	return re.toDomain(cat), nil
 }
 
-func (re *catRepository) GetAll(ctx context.Context) (domain.Cats, error) {
+func (re *catRepository) GetAll(ctx context.Context, first int64) (domain.Cats, error) {
 	db, err := connectDB(re.config)
 	if err != nil {
 		return nil, err
 	}
 
-	cats, err := models.Cats().All(ctx, db)
+	cats, err := models.Cats(qm.Limit(int(first))).All(ctx, db)
 	if err != nil {
 		return nil, err
 	}

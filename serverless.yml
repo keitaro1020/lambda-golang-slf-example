@@ -109,6 +109,19 @@ functions:
       - http:
           path: cats/{id}
           method: get
+  graphql:
+    name: graphql
+    handler: bin/graphql
+    vpc:
+      securityGroupIds:
+        - !Ref LambdaSecurityGroup
+      subnetIds:
+        - !Ref SubnetPrivateA
+        - !Ref SubnetPrivateC
+    events:
+      - http:
+          path: graphql/{proxy+}
+          method: any
 
 resources:
   Resources:

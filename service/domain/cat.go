@@ -26,6 +26,6 @@ type CatClient interface {
 // CatRepository is infrastructure (database) interface
 type CatRepository interface {
 	Get(ctx context.Context, id CatID) (*Cat, error)
-	GetAll(ctx context.Context) (Cats, error)
+	GetAll(ctx context.Context, first int64) (Cats, error)
 	CreateInTx(ctx context.Context, tx Tx, cat *Cat) (*Cat, error)
 }

@@ -196,7 +196,7 @@ func Test_handler_Ping(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    Response
+		want    events.APIGatewayProxyResponse
 		wantErr bool
 	}{
 		{
@@ -205,7 +205,7 @@ func Test_handler_Ping(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 			},
-			want: Response{
+			want: events.APIGatewayProxyResponse{
 				StatusCode:      200,
 				IsBase64Encoded: false,
 				Body:            "{\"message\":\"Okay so your other function also executed successfully!\"}",
@@ -233,48 +233,3 @@ func Test_handler_Ping(t *testing.T) {
 		})
 	}
 }
-
-//
-//func Test_handler_GetCat(t *testing.T) {
-//	type args struct {
-//		ctx context.Context
-//		req Request
-//	}
-//	tests := []struct {
-//		name    string
-//		args    args
-//		app     func(ctrl *gomock.Controller) application.App
-//		want    Response
-//		wantErr bool
-//	}{
-//		{
-//			name:    "ok_cat",
-//			args:    args{},
-//			app: func(ctrl *gomock.Controller) application.App {
-//
-//			},
-//			want:    Response{
-//
-//			},
-//			wantErr: false,
-//		},
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			ctrl := gomock.NewController(t)
-//			defer ctrl.Finish()
-//
-//			h := &handler{
-//				app: tt.app(ctrl),
-//			}
-//			got, err := h.GetCat(tt.args.ctx, tt.args.req)
-//			if (err != nil) != tt.wantErr {
-//				t.Errorf("GetCat() error = %v, wantErr %v", err, tt.wantErr)
-//				return
-//			}
-//			if !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("GetCat() got = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
