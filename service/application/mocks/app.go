@@ -7,6 +7,7 @@ package mocks
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
+	domain "github.com/keitaro1020/lambda-golang-slf-example/service/domain"
 	reflect "reflect"
 )
 
@@ -59,4 +60,34 @@ func (m *MockApp) S3Worker(ctx context.Context, bucket, filename string) error {
 func (mr *MockAppMockRecorder) S3Worker(ctx, bucket, filename interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "S3Worker", reflect.TypeOf((*MockApp)(nil).S3Worker), ctx, bucket, filename)
+}
+
+// GetCat mocks base method
+func (m *MockApp) GetCat(ctx context.Context, id domain.CatID) (*domain.Cat, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCat", ctx, id)
+	ret0, _ := ret[0].(*domain.Cat)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCat indicates an expected call of GetCat
+func (mr *MockAppMockRecorder) GetCat(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCat", reflect.TypeOf((*MockApp)(nil).GetCat), ctx, id)
+}
+
+// GetCats mocks base method
+func (m *MockApp) GetCats(ctx context.Context) (domain.Cats, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCats", ctx)
+	ret0, _ := ret[0].(domain.Cats)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCats indicates an expected call of GetCats
+func (mr *MockAppMockRecorder) GetCats(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCats", reflect.TypeOf((*MockApp)(nil).GetCats), ctx)
 }

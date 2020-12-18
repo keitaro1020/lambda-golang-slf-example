@@ -20,3 +20,6 @@ gomodgen:
 mockgen:
 	chmod u+x mockgen.sh
 	./mockgen.sh
+
+test:
+	go test ./...
