@@ -8,7 +8,6 @@ require (
 	github.com/aws/aws-sdk-go v1.36.2
 	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0
 	github.com/friendsofgo/errors v0.9.2
-	github.com/gin-gonic/gin v1.6.3
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/mock v1.4.4
