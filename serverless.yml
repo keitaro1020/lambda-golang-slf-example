@@ -48,7 +48,7 @@ package:
 
 functions:
   ping:
-    name: ping
+    name: "${self:service}-${self:provider.stage}-lambda-ping"
     handler: bin/ping
     vpc:
       securityGroupIds:
@@ -61,7 +61,7 @@ functions:
           path: ping
           method: get
   sqsWorker:
-    name: sqsWorker
+    name: "${self:service}-${self:provider.stage}-lambda-sqs-worker"
     handler: bin/sqs_worker
     timeout: 30
     reservedConcurrency: 1
@@ -78,7 +78,7 @@ functions:
     environment:
       BucketName: ${self:service}-${self:provider.stage}-bucket
   s3Worker:
-    name: s3Worker
+    name: "${self:service}-${self:provider.stage}-lambda-s3-worker"
     handler: bin/s3_worker
     timeout: 30
     reservedConcurrency: 1
@@ -94,7 +94,7 @@ functions:
           event: s3:ObjectCreated:*
           existing: true
   getCat:
-    name: getCat
+    name: "${self:service}-${self:provider.stage}-lambda-get-cat"
     handler: bin/get_cat
     vpc:
       securityGroupIds:
@@ -110,7 +110,7 @@ functions:
           path: cats/{id}
           method: get
   graphql:
-    name: graphql
+    name: "${self:service}-${self:provider.stage}-lambda-graphql"
     handler: bin/graphql
     vpc:
       securityGroupIds:

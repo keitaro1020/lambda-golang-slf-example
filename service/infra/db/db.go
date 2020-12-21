@@ -9,8 +9,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
-	"github.com/keitaro1020/lambda-golang-slf-example/service/infra/db/models"
+	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/service/infra/db/models"
 )
 
 type Config struct {

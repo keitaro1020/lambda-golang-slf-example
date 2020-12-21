@@ -1,4 +1,4 @@
-module github.com/keitaro1020/lambda-golang-slf-example
+module github.com/keitaro1020/lambda-golang-slf-practice
 
 go 1.15
 

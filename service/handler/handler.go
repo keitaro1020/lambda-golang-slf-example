@@ -9,13 +9,13 @@ import (
 	gqlgenhandler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/aws/aws-lambda-go/events"
-	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
-	"github.com/gin-gonic/gin"
+	chiadapter "github.com/awslabs/aws-lambda-go-api-proxy/chi"
+	"github.com/go-chi/chi"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/keitaro1020/lambda-golang-slf-example/graphql/generated"
-	"github.com/keitaro1020/lambda-golang-slf-example/service/application"
-	"github.com/keitaro1020/lambda-golang-slf-example/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/graphql/generated"
+	"github.com/keitaro1020/lambda-golang-slf-practice/service/application"
+	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
 )
 
 type Handler interface {
@@ -112,43 +112,40 @@ func (h *handler) GetCat(ctx context.Context, req events.APIGatewayProxyRequest)
 	return res, nil
 }
 
-var ginLambda *ginadapter.GinLambda
+var chiLambda *chiadapter.ChiLambda
 
 func (h *handler) Graphql(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Infof("request: %#v", req)
-	if ginLambda == nil {
-		r := gin.Default()
-		rg := r.Group("/graphql")
-		rg.POST("/query", h.graphqlHandler())
-		rg.GET("/playground", h.playgroundHandler())
-		rg.GET("/ping", func(c *gin.Context) {
-			log.Println("Handler!!")
-			c.JSON(200, gin.H{
-				"message": "pong",
+	if chiLambda == nil {
+		r := chi.NewRouter()
+		r.Route("/graphql", func(r chi.Router) {
+			r.Post("/query", gqlgenhandler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+				Resolvers: NewResolver(h.app),
+			})).ServeHTTP)
+			r.Get("/playground", playground.Handler("GraphQL", "/dev/graphql/query"))
+			r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {
+				payload := struct {
+					Message string
+				}{
+					Message: "pong",
+				}
+				res, err := json.Marshal(payload)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					w.Write([]byte(err.Error()))
+					return
+				}
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				w.Write(res)
 			})
 		})
-		ginLambda = ginadapter.New(r)
+		chiLambda = chiadapter.New(r)
 	}
 
-	return ginLambda.ProxyWithContext(ctx, req)
-}
-
-func (h *handler) graphqlHandler() gin.HandlerFunc {
-	server := gqlgenhandler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
-		Resolvers: NewResolver(h.app),
-	}))
-
-	return func(c *gin.Context) {
-		server.ServeHTTP(c.Writer, c.Request)
-	}
-}
-
-func (h *handler) playgroundHandler() gin.HandlerFunc {
-	server := playground.Handler("GraphQL", "/query")
-
-	return func(c *gin.Context) {
-		server.ServeHTTP(c.Writer, c.Request)
-	}
+	return chiLambda.ProxyWithContext(ctx, req)
 }
 
 func (h *handler) errorResponse(status int, err error) events.APIGatewayProxyResponse {

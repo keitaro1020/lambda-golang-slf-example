@@ -6,9 +6,10 @@ package mocks
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
-	domain "github.com/keitaro1020/lambda-golang-slf-example/service/domain"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
+	domain "github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
 )
 
 // MockApp is a mock of App interface

@@ -12,7 +12,7 @@ resolver:
   dir: ../service/handler
 
 autobind:
-  - "github.com/keitaro1020/lambda-golang-slf-example/service/domain"
+  - "github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
 
 models:
   ID:
