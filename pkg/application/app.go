@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	log "github.com/sirupsen/logrus"
 
@@ -19,14 +18,20 @@ type App interface {
 	GetCats(ctx context.Context, first int64) (domain.Cats, error)
 }
 
-func NewApp(repos *domain.AllRepository) App {
+type Config struct {
+	BucketName string
+}
+
+func NewApp(repos *domain.AllRepository, config *Config) App {
 	return &app{
-		repos: repos,
+		repos:  repos,
+		config: config,
 	}
 }
 
 type app struct {
-	repos *domain.AllRepository
+	repos  *domain.AllRepository
+	config *Config
 }
 
 func (app *app) SQSWorker(ctx context.Context, message string) error {
@@ -43,7 +48,7 @@ func (app *app) SQSWorker(ctx context.Context, message string) error {
 		}
 
 		file := bytes.NewBuffer(data)
-		if err := app.repos.S3Client.Upload(ctx, os.Getenv("BucketName"), fmt.Sprintf("%v/%v.txt", message, cat.ID), file); err != nil {
+		if err := app.repos.S3Client.Upload(ctx, app.config.BucketName, fmt.Sprintf("%v/%v.txt", message, cat.ID), file); err != nil {
 			return err
 		}
 		log.Debugf("cat[%v] = %v", i, cat)
