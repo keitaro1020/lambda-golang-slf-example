@@ -13,9 +13,9 @@ import (
 	"github.com/go-chi/chi"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/keitaro1020/lambda-golang-slf-practice/graphql/generated"
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/application"
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/application"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/scripts/graphql/generated"
 )
 
 type Handler interface {

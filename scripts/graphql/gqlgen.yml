@@ -5,14 +5,14 @@ exec:
   filename: ./generated/server_gen.go
 
 model:
-  filename: ../service/domain/models_gen.go
+  filename: ../../pkg/domain/models_gen.go
 
 resolver:
   layout: follow-schema
-  dir: ../service/handler
+  dir: ../../pkg/handler
 
 autobind:
-  - "github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+  - "github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
 
 models:
   ID:

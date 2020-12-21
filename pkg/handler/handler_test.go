@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/golang/mock/gomock"
 
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/application"
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/application/mocks"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/application"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/application/mocks"
 )
 
 func init() {

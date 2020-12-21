@@ -6,8 +6,8 @@ package handler
 import (
 	"context"
 
-	"github.com/keitaro1020/lambda-golang-slf-practice/graphql/generated"
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/scripts/graphql/generated"
 )
 
 func (r *catResolver) ID(ctx context.Context, obj *domain.Cat) (string, error) {

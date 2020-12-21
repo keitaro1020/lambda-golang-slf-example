@@ -19,11 +19,11 @@ gomodgen:
 	./gomod.sh
 
 mockgen:
-	chmod u+x mockgen.sh
-	./mockgen.sh
+	chmod u+x scripts/mockgen.sh
+	cd  scripts/ && ./mockgen.sh
 
 test:
 	go test ./...
 
 graphqlgen:
-	cd graphql && gqlgen gen
+	cd scripts/graphql && gqlgen gen

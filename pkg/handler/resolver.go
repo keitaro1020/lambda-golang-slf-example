@@ -1,6 +1,6 @@
 package handler
 
-import "github.com/keitaro1020/lambda-golang-slf-practice/service/application"
+import "github.com/keitaro1020/lambda-golang-slf-practice/pkg/application"
 
 // This file will not be regenerated automatically.
 //

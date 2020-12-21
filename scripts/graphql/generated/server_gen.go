@@ -12,7 +12,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -462,7 +462,7 @@ func (ec *executionContext) _Query_cats(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.([]*domain.Cat)
 	fc.Result = res
-	return ec.marshalNCat2ᚕᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋserviceᚋdomainᚐCatᚄ(ctx, field.Selections, res)
+	return ec.marshalNCat2ᚕᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋpkgᚋdomainᚐCatᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_cat(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -501,7 +501,7 @@ func (ec *executionContext) _Query_cat(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.(*domain.Cat)
 	fc.Result = res
-	return ec.marshalOCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋserviceᚋdomainᚐCat(ctx, field.Selections, res)
+	return ec.marshalOCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋpkgᚋdomainᚐCat(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2036,7 +2036,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCat2ᚕᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋserviceᚋdomainᚐCatᚄ(ctx context.Context, sel ast.SelectionSet, v []*domain.Cat) graphql.Marshaler {
+func (ec *executionContext) marshalNCat2ᚕᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋpkgᚋdomainᚐCatᚄ(ctx context.Context, sel ast.SelectionSet, v []*domain.Cat) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2060,7 +2060,7 @@ func (ec *executionContext) marshalNCat2ᚕᚖgithubᚗcomᚋkeitaro1020ᚋlambd
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋserviceᚋdomainᚐCat(ctx, sel, v[i])
+			ret[i] = ec.marshalNCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋpkgᚋdomainᚐCat(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2073,7 +2073,7 @@ func (ec *executionContext) marshalNCat2ᚕᚖgithubᚗcomᚋkeitaro1020ᚋlambd
 	return ret
 }
 
-func (ec *executionContext) marshalNCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋserviceᚋdomainᚐCat(ctx context.Context, sel ast.SelectionSet, v *domain.Cat) graphql.Marshaler {
+func (ec *executionContext) marshalNCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋpkgᚋdomainᚐCat(ctx context.Context, sel ast.SelectionSet, v *domain.Cat) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2381,7 +2381,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) marshalOCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋserviceᚋdomainᚐCat(ctx context.Context, sel ast.SelectionSet, v *domain.Cat) graphql.Marshaler {
+func (ec *executionContext) marshalOCat2ᚖgithubᚗcomᚋkeitaro1020ᚋlambdaᚑgolangᚑslfᚑpracticeᚋpkgᚋdomainᚐCat(ctx context.Context, sel ast.SelectionSet, v *domain.Cat) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

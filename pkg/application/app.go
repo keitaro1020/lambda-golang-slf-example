@@ -9,7 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
 )
 
 type App interface {

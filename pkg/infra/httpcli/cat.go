@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/keitaro1020/lambda-golang-slf-practice/service/domain"
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
 )
 
 const (
