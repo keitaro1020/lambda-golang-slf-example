@@ -18,25 +18,17 @@ import (
 	"github.com/keitaro1020/lambda-golang-slf-practice/scripts/graphql/generated"
 )
 
-type Handler interface {
-	Ping(ctx context.Context) (events.APIGatewayProxyResponse, error)
-	SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error
-	S3Worker(ctx context.Context, s3Event events.S3Event) error
-	GetCat(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
-	Graphql(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+type Handler struct {
+	app application.App
 }
 
-func NewHandler(app application.App) Handler {
-	return &handler{
+func NewHandler(app application.App) *Handler {
+	return &Handler{
 		app: app,
 	}
 }
 
-type handler struct {
-	app application.App
-}
-
-func (h *handler) Ping(ctx context.Context) (events.APIGatewayProxyResponse, error) {
+func (h *Handler) Ping(ctx context.Context) (events.APIGatewayProxyResponse, error) {
 	var buf bytes.Buffer
 
 	body, err := json.Marshal(map[string]interface{}{
@@ -61,7 +53,7 @@ func (h *handler) Ping(ctx context.Context) (events.APIGatewayProxyResponse, err
 	return resp, nil
 }
 
-func (h *handler) SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error {
+func (h *Handler) SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error {
 	// todo 入力パラメータのチェック
 	for i := range sqsEvent.Records {
 		if err := h.app.SQSWorker(ctx, sqsEvent.Records[i].Body); err != nil {
@@ -72,7 +64,7 @@ func (h *handler) SQSWorker(ctx context.Context, sqsEvent events.SQSEvent) error
 	return nil
 }
 
-func (h *handler) S3Worker(ctx context.Context, s3Event events.S3Event) error {
+func (h *Handler) S3Worker(ctx context.Context, s3Event events.S3Event) error {
 	// todo 入力パラメータのチェック
 	log.Debugf("%+v", s3Event)
 	for i := range s3Event.Records {
@@ -85,7 +77,7 @@ func (h *handler) S3Worker(ctx context.Context, s3Event events.S3Event) error {
 	return nil
 }
 
-func (h *handler) GetCat(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func (h *Handler) GetCat(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var resValue interface{}
 	res := events.APIGatewayProxyResponse{StatusCode: http.StatusOK}
 	id, ok := req.PathParameters["id"]
@@ -114,7 +106,7 @@ func (h *handler) GetCat(ctx context.Context, req events.APIGatewayProxyRequest)
 
 var chiLambda *chiadapter.ChiLambda
 
-func (h *handler) Graphql(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func (h *Handler) Graphql(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Infof("request: %#v", req)
 	if chiLambda == nil {
 		r := chi.NewRouter()
@@ -148,7 +140,7 @@ func (h *handler) Graphql(ctx context.Context, req events.APIGatewayProxyRequest
 	return chiLambda.ProxyWithContext(ctx, req)
 }
 
-func (h *handler) errorResponse(status int, err error) events.APIGatewayProxyResponse {
+func (h *Handler) errorResponse(status int, err error) events.APIGatewayProxyResponse {
 	body, err := h.jsonString(map[string]interface{}{
 		"message": "Okay so your other function also executed successfully!",
 	})
@@ -165,7 +157,7 @@ func (h *handler) errorResponse(status int, err error) events.APIGatewayProxyRes
 	}
 }
 
-func (h *handler) jsonString(v interface{}) (string, error) {
+func (h *Handler) jsonString(v interface{}) (string, error) {
 	body, err := json.Marshal(v)
 	if err != nil {
 		return "", err

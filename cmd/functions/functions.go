@@ -8,7 +8,7 @@ import (
 	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/infra"
 )
 
-func GetHandler() handler.Handler {
+func GetHandler() *handler.Handler {
 	return handler.NewHandler(
 		application.NewApp(
 			infra.NewAllRepository(),
