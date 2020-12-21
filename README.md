@@ -1,4 +1,4 @@
-## ServerlessFramework + Golang example
+## ServerlessFramework + Golang Practice
 ### 実装内容
 - SQSでキューを受け取り、外部のAPIを叩き、結果をS3に保存するLambda関数
     - [x] SQSでキューを受け取る
