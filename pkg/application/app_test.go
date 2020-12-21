@@ -3,6 +3,7 @@ package application
 import (
 	"bytes"
 	"context"
+	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -152,6 +153,121 @@ func Test_app_S3Worker(t *testing.T) {
 			}
 			if err := app.S3Worker(tt.args.ctx, tt.args.bucket, tt.args.filename); (err != nil) != tt.wantErr {
 				t.Errorf("S3Worker() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_app_GetCat(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		id  domain.CatID
+	}
+	tests := []struct {
+		name    string
+		repos   func(ctrl *gomock.Controller) *domain.AllRepository
+		config  *Config
+		args    args
+		want    *domain.Cat
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			repos: func(ctrl *gomock.Controller) *domain.AllRepository {
+				catRepository := mocks.NewMockCatRepository(ctrl)
+				catRepository.EXPECT().Get(gomock.Any(), domain.CatID("123")).Return(&domain.Cat{
+					ID:     "123",
+					URL:    "http://hoge/huga",
+					Width:  100,
+					Height: 200,
+				}, nil)
+				return &domain.AllRepository{CatRepository: catRepository}
+			},
+			config: &Config{BucketName: "bucket_name"},
+			args: args{
+				ctx: context.Background(),
+				id:  "123",
+			},
+			want: &domain.Cat{
+				ID:     "123",
+				URL:    "http://hoge/huga",
+				Width:  100,
+				Height: 200,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			app := &app{
+				repos:  tt.repos(ctrl),
+				config: tt.config,
+			}
+			got, err := app.GetCat(tt.args.ctx, tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetCat() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetCat() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_app_GetCats(t *testing.T) {
+	type args struct {
+		ctx   context.Context
+		first int64
+	}
+	tests := []struct {
+		name    string
+		repos   func(ctrl *gomock.Controller) *domain.AllRepository
+		config  *Config
+		args    args
+		want    domain.Cats
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			repos: func(ctrl *gomock.Controller) *domain.AllRepository {
+				catRepository := mocks.NewMockCatRepository(ctrl)
+				catRepository.EXPECT().GetAll(gomock.Any(), int64(100)).Return(domain.Cats{
+					{ID: "123", URL: "http://hoge/huga", Width: 100, Height: 200},
+					{ID: "234", URL: "http://hoge/huga2", Width: 300, Height: 400},
+				}, nil)
+				return &domain.AllRepository{CatRepository: catRepository}
+
+			},
+			config: &Config{BucketName: "bucket_name"},
+			args: args{
+				ctx:   context.Background(),
+				first: 100,
+			},
+			want: domain.Cats{
+				{ID: "123", URL: "http://hoge/huga", Width: 100, Height: 200},
+				{ID: "234", URL: "http://hoge/huga2", Width: 300, Height: 400},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			app := &app{
+				repos:  tt.repos(ctrl),
+				config: tt.config,
+			}
+			got, err := app.GetCats(tt.args.ctx, tt.args.first)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetCats() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetCats() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
