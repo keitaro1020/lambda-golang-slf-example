@@ -26,3 +26,5 @@
 - graphqlで実装された、RDSを検索した結果を返すLambda関数
     - [x] gqlgenを使う
     - [ ] appSyncを使う
+
+
