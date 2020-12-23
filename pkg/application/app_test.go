@@ -88,7 +88,7 @@ func Test_app_SQSWorker(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			app := &app{
+			app := &AppImpl{
 				repos:  tt.repos(ctrl),
 				config: tt.config,
 			}
@@ -147,7 +147,7 @@ func Test_app_S3Worker(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			app := &app{
+			app := &AppImpl{
 				repos:  tt.repos(ctrl),
 				config: tt.config,
 			}
@@ -201,7 +201,7 @@ func Test_app_GetCat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			app := &app{
+			app := &AppImpl{
 				repos:  tt.repos(ctrl),
 				config: tt.config,
 			}
@@ -257,7 +257,7 @@ func Test_app_GetCats(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			app := &app{
+			app := &AppImpl{
 				repos:  tt.repos(ctrl),
 				config: tt.config,
 			}
