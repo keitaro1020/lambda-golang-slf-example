@@ -27,4 +27,3 @@
     - [x] gqlgenを使う
     - [ ] appSyncを使う
 
-
