@@ -18,9 +18,16 @@ type App interface {
 	GetCats(ctx context.Context, first int64) (domain.Cats, error)
 }
 
+type AppImpl struct {
+	repos  *domain.AllRepository
+	config *Config
+}
+
 type Config struct {
 	BucketName string
 }
+
+var _ App = &AppImpl{}
 
 func NewApp(repos *domain.AllRepository, config *Config) *AppImpl {
 	return &AppImpl{
@@ -28,13 +35,6 @@ func NewApp(repos *domain.AllRepository, config *Config) *AppImpl {
 		config: config,
 	}
 }
-
-type AppImpl struct {
-	repos  *domain.AllRepository
-	config *Config
-}
-
-var _ App = &AppImpl{}
 
 func (app *AppImpl) SQSWorker(ctx context.Context, message string) error {
 	log.Debugf("log message %v", message)
