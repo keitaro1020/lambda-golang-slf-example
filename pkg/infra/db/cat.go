@@ -11,17 +11,19 @@ import (
 	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/infra/db/models"
 )
 
-type catRepository struct {
+type CatRepository struct {
 	config *Config
 }
 
-func NewCatRepository(config *Config) domain.CatRepository {
-	return &catRepository{
+var _ domain.CatRepository = &CatRepository{}
+
+func NewCatRepository(config *Config) *CatRepository {
+	return &CatRepository{
 		config: config,
 	}
 }
 
-func (re *catRepository) Get(ctx context.Context, id domain.CatID) (*domain.Cat, error) {
+func (re *CatRepository) Get(ctx context.Context, id domain.CatID) (*domain.Cat, error) {
 	db, err := connectDB(re.config)
 	if err != nil {
 		return nil, err
@@ -34,7 +36,7 @@ func (re *catRepository) Get(ctx context.Context, id domain.CatID) (*domain.Cat,
 	return re.toDomain(cat), nil
 }
 
-func (re *catRepository) GetAll(ctx context.Context, first int64) (domain.Cats, error) {
+func (re *CatRepository) GetAll(ctx context.Context, first int64) (domain.Cats, error) {
 	db, err := connectDB(re.config)
 	if err != nil {
 		return nil, err
@@ -52,7 +54,7 @@ func (re *catRepository) GetAll(ctx context.Context, first int64) (domain.Cats, 
 	return dcats, nil
 }
 
-func (re *catRepository) CreateInTx(ctx context.Context, tx domain.Tx, cat *domain.Cat) (*domain.Cat, error) {
+func (re *CatRepository) CreateInTx(ctx context.Context, tx domain.Tx, cat *domain.Cat) (*domain.Cat, error) {
 	sqlTx, err := sqlTx(tx)
 	if err != nil {
 		return nil, err
@@ -71,7 +73,7 @@ func (re *catRepository) CreateInTx(ctx context.Context, tx domain.Tx, cat *doma
 	return re.toDomain(mcat), nil
 }
 
-func (re *catRepository) toDomain(cat *models.Cat) *domain.Cat {
+func (re *CatRepository) toDomain(cat *models.Cat) *domain.Cat {
 	return &domain.Cat{
 		ID:     domain.CatID(cat.ID),
 		URL:    cat.URL,

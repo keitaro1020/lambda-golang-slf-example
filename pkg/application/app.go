@@ -22,19 +22,21 @@ type Config struct {
 	BucketName string
 }
 
-func NewApp(repos *domain.AllRepository, config *Config) App {
-	return &app{
+func NewApp(repos *domain.AllRepository, config *Config) *AppImpl {
+	return &AppImpl{
 		repos:  repos,
 		config: config,
 	}
 }
 
-type app struct {
+type AppImpl struct {
 	repos  *domain.AllRepository
 	config *Config
 }
 
-func (app *app) SQSWorker(ctx context.Context, message string) error {
+var _ App = &AppImpl{}
+
+func (app *AppImpl) SQSWorker(ctx context.Context, message string) error {
 	log.Debugf("log message %v", message)
 	cats, err := app.repos.CatClient.Search(ctx)
 	if err != nil {
@@ -56,7 +58,7 @@ func (app *app) SQSWorker(ctx context.Context, message string) error {
 	return nil
 }
 
-func (app *app) S3Worker(ctx context.Context, bucket, filename string) error {
+func (app *AppImpl) S3Worker(ctx context.Context, bucket, filename string) error {
 	file, err := app.repos.S3Client.Download(ctx, bucket, filename)
 	if err != nil {
 		return nil
@@ -79,7 +81,7 @@ func (app *app) S3Worker(ctx context.Context, bucket, filename string) error {
 	return nil
 }
 
-func (app *app) GetCat(ctx context.Context, id domain.CatID) (*domain.Cat, error) {
+func (app *AppImpl) GetCat(ctx context.Context, id domain.CatID) (*domain.Cat, error) {
 	cat, err := app.repos.CatRepository.Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -87,7 +89,7 @@ func (app *app) GetCat(ctx context.Context, id domain.CatID) (*domain.Cat, error
 	return cat, nil
 }
 
-func (app *app) GetCats(ctx context.Context, first int64) (domain.Cats, error) {
+func (app *AppImpl) GetCats(ctx context.Context, first int64) (domain.Cats, error) {
 	cats, err := app.repos.CatRepository.GetAll(ctx, first)
 	if err != nil {
 		return nil, err

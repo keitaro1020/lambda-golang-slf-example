@@ -4,21 +4,23 @@ import (
 	"context"
 	"io"
 
+	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-
-	"github.com/keitaro1020/lambda-golang-slf-practice/pkg/domain"
 )
 
-type s3Client struct{}
+type S3Client struct{}
 
-func NewS3Client() domain.S3Client {
-	return &s3Client{}
+var _ domain.S3Client = &S3Client{}
+
+func NewS3Client() *S3Client {
+	return &S3Client{}
 }
 
-func (cli *s3Client) Upload(ctx context.Context, bucketName, key string, file io.Reader) error {
+func (cli *S3Client) Upload(ctx context.Context, bucketName, key string, file io.Reader) error {
 	uploader := s3manager.NewUploader(cli.newSession())
 	if _, err := uploader.UploadWithContext(ctx, &s3manager.UploadInput{
 		Bucket: aws.String(bucketName),
@@ -30,7 +32,7 @@ func (cli *s3Client) Upload(ctx context.Context, bucketName, key string, file io
 	return nil
 }
 
-func (cli *s3Client) Download(ctx context.Context, bucketName, key string) ([]byte, error) {
+func (cli *S3Client) Download(ctx context.Context, bucketName, key string) ([]byte, error) {
 	var buf []byte
 	file := aws.NewWriteAtBuffer(buf)
 
@@ -44,7 +46,7 @@ func (cli *s3Client) Download(ctx context.Context, bucketName, key string) ([]by
 	return file.Bytes(), nil
 }
 
-func (cli *s3Client) newSession() *session.Session {
+func (cli *S3Client) newSession() *session.Session {
 	return session.Must(session.NewSession(&aws.Config{
 		Region: aws.String("ap-northeast-1"),
 	}))

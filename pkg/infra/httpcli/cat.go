@@ -11,17 +11,19 @@ const (
 	urlCatAPI = "https://api.thecatapi.com/v1/images/search"
 )
 
-type catClient struct {
+type CatClient struct {
 	httpClient HTTPClient
 }
 
-func NewCatClient(httpClient HTTPClient) domain.CatClient {
-	return &catClient{
+var _ domain.CatClient = &CatClient{}
+
+func NewCatClient(httpClient HTTPClient) *CatClient {
+	return &CatClient{
 		httpClient: httpClient,
 	}
 }
 
-func (cli *catClient) Search(ctx context.Context) (domain.Cats, error) {
+func (cli *CatClient) Search(ctx context.Context) (domain.Cats, error) {
 	cats := domain.Cats{}
 	_, err := cli.httpClient.GetJSON(ctx, urlCatAPI, http.Header{}, nil, &cats)
 	if err != nil {
