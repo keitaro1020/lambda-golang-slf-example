@@ -87,7 +87,7 @@ func Test_handler_SQSWorker(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			h := &handler{
+			h := &Handler{
 				app: tt.app(ctrl),
 			}
 			if err := h.SQSWorker(tt.args.ctx, tt.args.sqsEvent); (err != nil) != tt.wantErr {
@@ -175,7 +175,7 @@ func Test_handler_S3Worker(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			h := &handler{
+			h := &Handler{
 				app: tt.app(ctrl),
 			}
 			if err := h.S3Worker(tt.args.ctx, tt.args.s3Event); (err != nil) != tt.wantErr {
@@ -219,7 +219,7 @@ func Test_handler_Ping(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := &handler{
+			h := &Handler{
 				app: tt.fields.app,
 			}
 			got, err := h.Ping(tt.args.ctx)
