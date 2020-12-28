@@ -25,5 +25,9 @@ mockgen:
 test:
 	go test ./...
 
+sqlboilergen:
+	chmod u+x scripts/mockgen.sh
+	cd  scripts/ && ./mockgen.sh
+
 graphqlgen:
 	cd scripts/graphql && gqlgen gen
